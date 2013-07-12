@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="FWI-disaster-project-style.xsl"?>
+
+<issue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.christophermchurch.com" xsi:schemaLocation="http://www.christophermchurch.com FWI-disaster-project-schema.xsd">
+	<metadata>
+		<newspaper name="Les Colonies" date="2013-06-09" />
+		<files total="02" folder="Les Colonies 1890-1891 NYU">
+			<file name="1891-12-20_les-colonies_1.tif"/>
+			<file name="1891-12-20_les-colonies_2.tif"/>
+		</files>
+		<notes>
+			<note author="Yvonne Lin" num="01">This article is interesting because ... </note>
+			<note author="Yvonne Lin" num="02"></note>
+		</notes>
+	</metadata>
+	
+	<item type="telegram" topic="1890 Fire" author="AUTHOR" loc="New York" date="1890-06-17" start_page="01" end_page="02">
+		<byline></byline>
+		<body>
+			<section num="01">
+				<heading></heading>
+				<para num="01"></para>
+			</section>
+		</body>
+		<notes>
+			<note author="Yvonne Lin" num="01">This article is interesting because ... </note>
+			<note author="Yvonne Lin" num="02"></note>
+		</notes>
+	</item>
+	<item type="article" topic="1890 Fire" author="AUTHOR" loc="New York" date="1890-06-17" start_page="01" end_page="02">
+		<title>test</title>
+		<byline>New York, 17 juin</byline>
+		<body>
+			<section num="01">
+				<heading/>
+				<para num="01"></para>
+				<para num="02"></para>
+			</section>
+		</body>
+		<notes>
+			<note author="Yvonne Lin" num="01">This article is interesting because ... </note>
+			<note author="Yvonne Lin" num="02"></note>
+		</notes>
+	</item>
+	<item type="divers" topic="1890 Fire" author="AUTHOR" loc="New York" date="1890-06-17" start_page="01" end_page="02">
+		<body>
+			<section num="01">
+				<heading/>
+				<para num="01"></para>
+				<para num="02"></para>
+			</section>
+		</body>
+		<notes>
+			<note author="Yvonne Lin" num="01">This article is interesting because ... </note>
+			<note author="Yvonne Lin" num="02"></note>
+		</notes>
+	</item>
+	<item type="letter" topic="1890 Fire" author="AUTHOR" loc="New York" date="1890-06-17" start_page="01" end_page="02">
+		<title></title>
+		<byline>New York, 17 juin</byline>
+		<body>
+			<section num="01">
+				<heading/>
+				<para num="01"></para>
+				<para num="02"></para>
+			</section>
+		</body>
+		<notes>
+			<note author="Yvonne Lin" num="01">This article is interesting because ... </note>
+			<note author="Yvonne Lin" num="02"></note>
+		</notes>
+	</item>
+	<item type="ad" topic="1890 Fire" author="AUTHOR" loc="New York" date="1890-06-17" start_page="01" end_page="02">
+		<title></title>
+		<byline>New York, 17 juin</byline>
+		<body>
+			<section num="01">
+				<para num="01"></para>
+				<para num="02"></para>
+			</section>
+		</body>
+		<notes>
+			<note author="Yvonne Lin" num="01">This article is interesting because ... </note>
+			<note author="Yvonne Lin" num="02"></note>
+		</notes>
+	</item>
+</issue>

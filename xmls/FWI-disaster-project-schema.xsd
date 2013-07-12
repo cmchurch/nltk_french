@@ -1,0 +1,146 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.christophermchurch.com">
+  <xs:element name="issue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="newspaper">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="name"/>
+                      <xs:attribute type="xs:date" name="date"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="files">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="file" maxOccurs="unbounded" minOccurs="1">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="name"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:byte" name="total"/>
+                  <xs:attribute type="xs:string" name="folder"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="notes" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="note" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:byte" name="num" use="optional"/>
+							<xs:attribute type="xs:string" name="author" use="required"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                 
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="item" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="title" minOccurs="0"/>
+              <xs:element type="xs:string" name="byline" minOccurs="0"/>
+              <xs:element name="body">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="section" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:choice maxOccurs="unbounded">
+                          <xs:element type="xs:string" name="heading" minOccurs="0" maxOccurs="1" />
+							<xs:element name="para" maxOccurs="unbounded" minOccurs="0">
+								<xs:complexType mixed="true">
+								   <xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="sic" type="xs:string"/>
+									<xs:element name="illegible">
+										<xs:complexType mixed="true">
+											<xs:attribute type="xs:byte" name="words"/>
+										</xs:complexType>
+									</xs:element>
+								  </xs:choice>
+								  <xs:attribute type="xs:byte" name="num"/>
+								</xs:complexType>
+							</xs:element>
+						    <xs:element name="quote" maxOccurs="unbounded" minOccurs="0">
+								<xs:complexType mixed="true">
+								  <xs:sequence>
+									  <xs:element name="para" maxOccurs="unbounded">
+										<xs:complexType mixed="true">
+										   <xs:choice minOccurs="0" maxOccurs="unbounded">
+											<xs:element name="sic" type="xs:string"/>
+											<xs:element name="illegible">
+												<xs:complexType mixed="true">
+													<xs:attribute type="xs:byte" name="words"/>
+												</xs:complexType>
+											</xs:element>
+										  </xs:choice>
+										  <xs:attribute type="xs:byte" name="num"/>
+										</xs:complexType>
+								      </xs:element>
+								  </xs:sequence>
+								  <xs:attribute type="xs:string" name="type"/>
+							</xs:complexType>
+                          </xs:element>
+                        </xs:choice>
+                        <xs:attribute type="xs:byte" name="num"/>
+                      </xs:complexType>
+                    </xs:element>            
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="notes" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="note" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:byte" name="num" use="optional"/>
+							<xs:attribute type="xs:string" name="author" use="required"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="type" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="divers" />
+						<xs:enumeration value="ad" />
+						<xs:enumeration value="telegram" />
+						<xs:enumeration value="article" />
+						<xs:enumeration value="letter" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+            <xs:attribute type="xs:string" name="topic" use="optional"/>
+            <xs:attribute type="xs:string" name="author" use="optional"/>
+            <xs:attribute type="xs:string" name="loc" use="optional"/>
+            <xs:attribute type="xs:date" name="date" use="optional"/>
+            <xs:attribute type="xs:byte" name="start_page" use="optional"/>
+            <xs:attribute type="xs:byte" name="end_page" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
