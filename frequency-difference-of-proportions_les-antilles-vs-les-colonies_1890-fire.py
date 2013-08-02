@@ -78,6 +78,7 @@ for document in documents:
 def diff_prop(text1, text2):
     """
     returns a FreqDist that includes the difference in proportions between text 1 and text 2
+	Thanks to Aditi Muralidharan for a great workshop on NLTK and the code for this function
     """
     vocab1 = text1.vocab()
     vocab2 = text2.vocab()
