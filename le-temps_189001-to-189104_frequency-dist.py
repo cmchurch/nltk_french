@@ -18,6 +18,9 @@ import os #operating system library for os-walk
 #root_path="E:\\Webscraping\\20130827_bnfscrape-data\\working-files\\period2" #set the path that we are going to read through
 root_path = "C:\\Users\\Christopher\\Desktop\\nltk - le temps data\\edit"
 
+#VERONIS STOPWORDS
+stopwords = ["Ap.", "Apr.", "GHz", "MHz", "USD", "a", "afin", "ah", "ai", "aie", "aient", "aies", "ait", "alors", "après", "as", "attendu", "au", "au-delà", "au-devant", "aucun", "aucune", "audit", "auprès", "auquel", "aura", "aurai", "auraient", "aurais", "aurait", "auras", "aurez", "auriez", "aurions", "aurons", "auront", "aussi", "autour", "autre", "autres", "autrui", "aux", "auxdites", "auxdits", "auxquelles", "auxquels", "avaient", "avais", "avait", "avant", "avec", "avez", "aviez", "avions", "avons", "ayant", "ayez", "ayons", "b", "bah", "banco", "ben", "bien", "bé", "c", "c'", "c'est", "c'était", "car", "ce", "ceci", "cela", "celle", "celle-ci", "celle-là", "celles", "celles-ci", "celles-là", "celui", "celui-ci", "celui-là", "celà", "cent", "cents", "cependant", "certain", "certaine", "certaines", "certains", "ces", "cet", "cette", "ceux", "ceux-ci", "ceux-là", "cf.", "cg", "cgr", "chacun", "chacune", "chaque", "chez", "ci", "cinq", "cinquante", "cinquante-cinq", "cinquante-deux", "cinquante-et-un", "cinquante-huit", "cinquante-neuf", "cinquante-quatre", "cinquante-sept", "cinquante-six", "cinquante-trois", "cl", "cm", "cm²", "comme", "contre", "d", "d'", "d'après", "d'un", "d'une", "dans", "de", "depuis", "derrière", "des", "desdites", "desdits", "desquelles", "desquels", "deux", "devant", "devers", "dg", "différentes", "différents", "divers", "diverses", "dix", "dix-huit", "dix-neuf", "dix-sept", "dl", "dm", "donc", "dont", "douze", "du", "dudit", "duquel", "durant", "dès", "déjà", "e", "eh", "elle", "elles", "en", "en-dehors", "encore", "enfin", "entre", "envers", "es", "est", "et", "eu", "eue", "eues", "euh", "eurent", "eus", "eusse", "eussent", "eusses", "eussiez", "eussions", "eut", "eux", "eûmes", "eût", "eûtes", "f", "fait", "fi", "flac", "fors", "furent", "fus", "fusse", "fussent", "fusses", "fussiez", "fussions", "fut", "fûmes", "fût", "fûtes", "g", "gr", "h", "ha", "han", "hein", "hem", "heu", "hg", "hl", "hm", "hm³", "holà", "hop", "hormis", "hors", "huit", "hum", "hé", "i", "ici", "il", "ils", "j", "j'", "j'ai", "j'avais", "j'étais", "jamais", "je", "jusqu'", "jusqu'au", "jusqu'aux", "jusqu'à", "jusque", "k", "kg", "km", "km²", "l", "l'", "l'autre", "l'on", "l'un", "l'une", "la", "laquelle", "le", "lequel", "les", "lesquelles", "lesquels", "leur", "leurs", "lez", "lors", "lorsqu'", "lorsque", "lui", "lès", "m", "m'", "ma", "maint", "mainte", "maintes", "maints", "mais", "malgré", "me", "mes", "mg", "mgr", "mil", "mille", "milliards", "millions", "ml", "mm", "mm²", "moi", "moins", "mon", "moyennant", "mt", "m²", "m³", "même", "mêmes", "n", "n'avait", "n'y", "ne", "neuf", "ni", "non", "nonante", "nonobstant", "nos", "notre", "nous", "nul", "nulle", "nº", "néanmoins", "o", "octante", "oh", "on", "ont", "onze", "or", "ou", "outre", "où", "p", "par", "par-delà", "parbleu", "parce", "parmi", "pas", "passé", "pendant", "personne", "peu", "plus", "plus_d'un", "plus_d'une", "plusieurs", "pour", "pourquoi", "pourtant", "pourvu", "près", "puisqu'", "puisque", "q", "qu", "qu'", "qu'elle", "qu'elles", "qu'il", "qu'ils", "qu'on", "quand", "quant", "quarante", "quarante-cinq", "quarante-deux", "quarante-et-un", "quarante-huit", "quarante-neuf", "quarante-quatre", "quarante-sept", "quarante-six", "quarante-trois", "quatorze", "quatre", "quatre-vingt", "quatre-vingt-cinq", "quatre-vingt-deux", "quatre-vingt-dix", "quatre-vingt-dix-huit", "quatre-vingt-dix-neuf", "quatre-vingt-dix-sept", "quatre-vingt-douze", "quatre-vingt-huit", "quatre-vingt-neuf", "quatre-vingt-onze", "quatre-vingt-quatorze", "quatre-vingt-quatre", "quatre-vingt-quinze", "quatre-vingt-seize", "quatre-vingt-sept", "quatre-vingt-six", "quatre-vingt-treize", "quatre-vingt-trois", "quatre-vingt-un", "quatre-vingt-une", "quatre-vingts", "que", "quel", "quelle", "quelles", "quelqu'", "quelqu'un", "quelqu'une", "quelque", "quelques", "quelques-unes", "quelques-uns", "quels", "qui", "quiconque", "quinze", "quoi", "quoiqu'", "quoique", "r", "revoici", "revoilà", "rien", "s", "s'", "sa", "sans", "sauf", "se", "seize", "selon", "sept", "septante", "sera", "serai", "seraient", "serais", "serait", "seras", "serez", "seriez", "serions", "serons", "seront", "ses", "si", "sinon", "six", "soi", "soient", "sois", "soit", "soixante", "soixante-cinq", "soixante-deux", "soixante-dix", "soixante-dix-huit", "soixante-dix-neuf", "soixante-dix-sept", "soixante-douze", "soixante-et-onze", "soixante-et-un", "soixante-et-une", "soixante-huit", "soixante-neuf", "soixante-quatorze", "soixante-quatre", "soixante-quinze", "soixante-seize", "soixante-sept", "soixante-six", "soixante-treize", "soixante-trois", "sommes", "son", "sont", "sous", "soyez", "soyons", "suis", "suite", "sur", "sus", "t", "t'", "ta", "tacatac", "tandis", "te", "tel", "telle", "telles", "tels", "tes", "toi", "ton", "toujours", "tous", "tout", "toute", "toutefois", "toutes", "treize", "trente", "trente-cinq", "trente-deux", "trente-et-un", "trente-huit", "trente-neuf", "trente-quatre", "trente-sept", "trente-six", "trente-trois", "trois", "très", "tu", "u", "un", "une", "unes", "uns", "v", "vers", "via", "vingt", "vingt-cinq", "vingt-deux", "vingt-huit", "vingt-neuf", "vingt-quatre", "vingt-sept", "vingt-six", "vingt-trois", "vis-à-vis", "voici", "voilà", "vos", "votre", "vous", "w", "x", "y", "z", "zéro", "à", "ç'", "ça", "ès", "étaient", "étais", "était", "étant", "étiez", "étions", "été", "étée", "étées", "étés", "êtes", "être", "ô"]
+
 # <codecell>
 
 #STRIP TEXT FROM BNF OCR HTML
@@ -63,24 +66,118 @@ import nltk #import the natural language toolkit library
 
 #get filenames
 relative_path = "\\text" #set the relative working path
+path=root_path+relative_path
 docs=[] #init an empty docs array to store our newspaper documents
 
 for root,dirs,files in os.walk(path): #walk through the filepath and look for xml files, storing them in docs array
     for file in files:
         if file.endswith('.txt'):
-             open_doc = open(root_path+relative_path+"\\"+file, "r") #open the file
+             open_doc = open(path+"\\"+file, "r") #open the file
              open_doc_text = open_doc.read() #read the text
              filename_array = string.split(str(file),"_") #explode the file name on the "_" character, grabbing the newspaper name and the date
              tokens = nltk.word_tokenize(open_doc_text) #create tokens based on whitespace (word_tokenize)
              sentences = nltk.sent_tokenize(open_doc_text) #grab sentences from nltk (sent_tokenize)
              text = nltk.text.Text(tokens,'UTF8') #create an NTLK text from the word tokens
-             freqDist = nltk.FreqDist(word.lower() for word in tokens) #create a frequency distribution (normalized with lowercase words) for this newspaper issue
+             freqDist = nltk.FreqDist(word.lower() for word in tokens if word.isalpha() and word not in stopwords) #create a frequency distribution (normalized with lowercase words) for this newspaper issue, and discard any non-alphanumeric words
              docs.append({"newspaper_name":filename_array[1],"newspaper_date":filename_array[0],"newspaper_rawtext":open_doc_text,"tokens":tokens,"sentences":sentences,"text":text,"dist":freqDist }) #add all the information to a dictionary object in an array (see above)
              print "read: " + filename_array[0] #let the user know what document we are on
              open_doc.close() #close the open document that was being read
 
                 
 print "Done!" #print complete message
+
+# <codecell>
+
+#export All Frequency distributions for each individual newspaper issue to its own CSV file
+relative_path = "\\freqdist" #set the relative path
+path = root_path+relative_path
+print "Exporting frequency distributions" #let the user know what we are doing
+for doc in docs: #go through all our documents
+    f = open(path + "\\" + str(doc["newspaper_date"])+"_"+doc["newspaper_name"]+"_freqdist.txt","w") #open a file to store our frequency distribution
+    for k,v in doc["dist"].items(): #go through each frequency distribution and write it to a file that matches the "newspaper_name"-"newspaper_date"
+        string = "'"+k +"'," + str(v) + "\n" #write it in the following CSV format ( 'KEY',value )
+        f.write(string) #write it to the file
+    f.close() #close the working file
+    print ".", #print a dot to let the user know we're working
+print "Done!" #let the user know the task is done
+
+# <codecell>
+
+for doc in docs:
+    print doc["newspaper_date"]
+
+# <codecell>
+
+#AGGREGATE FREQUENCY DISTRIBUTIONS BY MONTH
+#stores this in a dictionary called "MONTH"
+relative_path = "\\freqdist\\bymonth"
+month = {}
+
+print "Aggregating"
+#this aggregates the information by month
+for doc in docs: #go through all the documents
+    print ".",
+    date_month = str(doc['newspaper_date'][:6]) #grab the date from the first 6 characters, which gives you the year and month
+    current_distribution = doc['dist']
+    if date_month in month: #if the month is already in our months array, then look up its key and add the current value to it
+        for k,v in current_distribution.items(): #go through each frequency distribution and write it to a file that matches the "newspaper_name"-"newspaper_date"
+            if k in month[date_month]:
+                month[date_month][k]+=v
+            else:
+                month[date_month][k]=v
+    else: #if we haven't already created a key for a given month, do it now
+        month[date_month]=current_distribution
+print "Done!"
+
+# <codecell>
+
+#output all the frequencies aggregated by month into a text csv for each month
+
+relative_path = "\\text\\freqdist\\bymonth" #relative path
+path=root_path+relative_path #absolute path
+
+print "Outputting frequencies by month" #let user know the process started
+for m,dist in month.items(): #go through our monthly distributions
+    f = open(path + "\\" + str(m) + "_freqdist_monthly.txt","w") #open a month file to output to
+    for k,v in dist.items(): #get the keys (k) and values (v) for each frequency distribution based on a given month
+        f.write("'"+str(k)+"', "+str(v)+'\n') #write it out following the format ("KEY", value)
+    print ".", #print a dot to let the user know it's working
+    f.close() #close the file
+print "Done!" #let the user know we are all done
+
+# <codecell>
+
+#output all the frequencies aggregated by month into a json
+
+relative_path = "\\text\\freqdist\\bymonth" #relative path
+path=root_path+relative_path #absolute path
+
+print "Outputting frequencies by month to a json file" #let user know the process started
+f = open(path + "\\" + "freqdist_monthly.json","w") #open a month file to output to
+f.write("[")
+total_months = len(month.items()) #total number of months in the list
+j=0 #track the number of months, so that commas are not added at the end of the list
+for m,dist in month.items(): #go through our monthly distributions
+    j+=1 #j++
+    f.write('\n{"month":"'+m+'",\n'+'\n\t"freqDist":[')
+    length=len(dist.items()) #total number of items in the frequency distribution
+    i=0 #use i to track the position in the list, so that commas are not added to the end of the list
+    for k,v in dist.items(): #get the keys (k) and values (v) for each frequency distribution based on a given month
+        f.write('\n\t\t{"term":"'+str(k)+'", "freq":"'+str(v)+'"}') #write it out following the format ("KEY", value)
+        i+=1 #i++
+        if i<length: #only add a comma if not at the end of the list
+            f.write(',')
+    f.write("]}")
+    if j<total_months: #only add a comma if not at the end of the list
+        f.write(',')
+    print ".", #print a dot to let the user know it's working
+f.write("]\n")
+f.close() #close the file
+print "Done!" #let the user know we are all done
+
+# <headingcell level=1>
+
+# MATPLOTLIB APPLICATION
 
 # <codecell>
 
@@ -124,48 +221,6 @@ plt.show() #print the graph
 
 # <codecell>
 
-#export All Frequency distributions for each individual newspaper issue to its own CSV file
-relative_path = "\\freqdist" #set the relative path
-print "Exporting frequency distributions" #let the user know what we are doing
-for doc in docs: #go through all our documents
-    f = open(root_path + relative_path + "\\" + str(doc["newspaper_date"])+"_"+doc["newspaper_name"]+"_freqdist.txt","w") #open a file to store our frequency distribution
-    for k,v in doc["dist"].items(): #go through each frequency distribution and write it to a file that matches the "newspaper_name"-"newspaper_date"
-        string = "'"+k +"'," + str(v) + "\n" #write it in the following CSV format ( 'KEY',value )
-        f.write(string) #write it to the file
-    f.close() #close the working file
-    print ".", #print a dot to let the user know we're working
-print "Done!" #let the user know the task is done
-
-# <codecell>
-
-for doc in docs:
-    print doc["newspaper_date"]
-
-# <codecell>
-
-#AGGREGATE FREQUENCY DISTRIBUTIONS BY MONTH -- note: not working!
-relative_path = "\\freqdist\\bymonth"
-month = {}
-#this aggregates the information by month
-for doc in docs: #go through all the documents
-    date_month = str(doc['newspaper_date'][:6]) #grab the date from the first 6 characters, which gives you the year and month
-    current_distribution = doc['dist']
-    if date_month in month: #if the month is already in our months array, then look up its key and add the current value to it
-        for k,v in current_distribution.items(): #go through each frequency distribution and write it to a file that matches the "newspaper_name"-"newspaper_date"
-            if k in month[date_month]:
-                month[date_month][k]+=v
-            else:
-                month[date_month][k]=v
-    else: #if we haven't already created a key for a given month, do it now
-        month[date_month]=current_distribution
-
-# <codecell>
-
-print month
-
-# <codecell>
-
-print month['189104']
 
 # <codecell>
 
