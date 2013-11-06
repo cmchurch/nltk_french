@@ -1,0 +1,201 @@
+<html>
+<head>
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+#graph {float:left;width:960px;height:500px;}
+#show-after-load {display:none;}
+#title {margin:10px;}
+.label {font-weight:bold;}
+#suggestions a {color:blue;cursor:pointer;margin:10px;}
+</style>
+
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript">
+    var dataset;
+	var datakeys;
+	var url = "freqdist_monthly.json";
+    var default_search_term = "victimes";
+	
+   function setkeys(data) {
+		var keysarray = [];
+		for(var key in data) {
+			keysarray.push(key);
+		};
+		keysarray.sort();
+		return keysarray;
+	}
+   
+   function getFrequency(query) {
+		var results = [];
+		for (var x in datakeys) {
+			var result;
+			if (dataset[datakeys[x]][query]) {
+				result = dataset[datakeys[x]][query];
+			} else {
+				result = 0;
+			}
+			
+			results.push(result);
+		}
+		return results;
+	}
+   
+   function loadData() {
+			$.getJSON(url,function(json) {
+			   dataset = json;
+			   console.log("JSON loaded as dataset");
+			   datakeys = setkeys(dataset);
+			   $('#loading').hide();
+			   search();
+			   $('#show-after-load').show();
+			 });
+	}
+	
+	function search() {
+		var search_term = $('#query').val();
+		var results = getFrequency(search_term);
+		showResults(results);
+		
+		var data_array = [];
+		for (var x in results) {
+			data_array.push([datakeys[x],results[x]]);
+		}
+		console.log(x)
+		console.log(data_array[0]);
+		drawGraph(data_array);
+	}
+	
+	function showResults(an_array) {
+		var results ="";
+		for(var x in an_array) {
+			results = results + datakeys[x] + ": " + an_array[x] + "<br/>"
+		}
+		$('#results').html(results);
+	}
+	
+	function drawGraph(arrData) {
+					 
+		var margin = {top: 20, right: 20, bottom: 30, left: 50},
+			width = 960 - margin.left - margin.right,
+			height = 500 - margin.top - margin.bottom;
+
+		var parseDate = d3.time.format("%Y%m").parse;
+
+
+		var x = d3.time.scale()
+			.range([0, width])
+
+		var y = d3.scale.linear()
+			.range([height, 0]);
+
+		var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("bottom");
+
+		var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left");
+
+		var line = d3.svg.line()
+			.x(function(d) { return x(d.date); })
+			.y(function(d) { return y(d.close); });
+		
+		d3.select("#graph").selectAll("svg").remove();
+		
+		var svg = d3.select("#graph").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+		  .append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+		  var data = arrData.map(function(d) {
+			  return {
+				 date: parseDate(d[0]),
+				 close: d[1]
+			  };
+			  
+		  });
+
+		  x.domain(d3.extent(data, function(d) { return d.date; }));
+		  y.domain(d3.extent(data, function(d) { return d.close; }));
+
+		  svg.append("g")
+			  .attr("class", "x axis")
+			  .attr("transform", "translate(0," + height + ")")
+			  .call(xAxis);
+
+		  svg.append("g")
+			  .attr("class", "y axis")
+			  .call(yAxis)
+			.append("text")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", 6)
+			  .attr("dy", ".71em")
+			  .style("text-anchor", "end")
+			  .text("Frequency");
+
+		  svg.append("path")
+			  .datum(data)
+			  .attr("class", "line")
+			  .attr("d", line);
+
+	}
+	
+	$(document).ready(function() {
+		$('#query').val(default_search_term);
+		loadData();
+		$('#suggestions a').click(function() {
+			$('#query').val($(this).text());
+			search();
+		});
+	});
+   </script>
+
+</head>
+<body>
+<div id="loading">Loading...</div>
+<div id="show-after-load">
+	<div id="title">
+		<h3>Word Frequecny for <i>Le Temps</i> (January 1890 to April 1891)</h3>
+	</div>
+	<div id="search-box">
+		<input type="text" name="search_term" id="query"></input>
+		<button onclick="search()">Get Frequency</button>
+		<div id="suggestions">
+			<span class="label">Suggestions: </span>
+			<a>victimes</a>
+			<a>fort-de-france</a>
+			<a>martinique</a>
+			<a>secours</a>
+		</div>
+	</div>
+	<br/>
+	
+	<div id="graph"></div>
+	<div id="results"></div>
+</div>		
+</body>
+</html>
