@@ -8,6 +8,8 @@
 #Social Science Data Lab (D-Lab)
 #University of California, Berkeley
 
+import os #operating system library for os-walk
+
 #global variables
 
 #set the root path for the working directory
@@ -27,7 +29,6 @@ stopwords = ["Ap.", "Apr.", "GHz", "MHz", "USD", "a", "afin", "ah", "ai", "aie",
 
 #USE REGEX INSTEAD OF XML PARSE; lower overhead; also, the files themselves had some problems in the XML and were not properly formed, which resulted in a parse error exception; regex is agnostic to this problem
 import re #regex library
-import os #operating system library for os-walk
 
 
 elem_name = "span" #name of the dom element to look for
@@ -86,7 +87,7 @@ for root,dirs,files in os.walk(path): #walk through the filepath and look for xm
              tokens = nltk.word_tokenize(open_doc_text) #create tokens based on whitespace (word_tokenize)
              sentences = nltk.sent_tokenize(open_doc_text) #grab sentences from nltk (sent_tokenize)
              text = nltk.text.Text(tokens,'UTF8') #create an NTLK text from the word tokens
-             freqDist = nltk.FreqDist(word.lower() for word in tokens if word.isalpha() and word not in stopwords) #create a frequency distribution (normalized with lowercase words) for this newspaper issue, and discard any non-alphanumeric words
+             freqDist = nltk.FreqDist(word.lower() for word in tokens if re.match("^[a-zA-Z0-9_.-]+$", word) and word not in stopwords) #create a frequency distribution (normalized with lowercase words) for this newspaper issue, and discard any non-alphanumeric words
              docs.append({"newspaper_name":filename_array[1],"newspaper_date":filename_array[0],"newspaper_rawtext":open_doc_text,"tokens":tokens,"sentences":sentences,"text":text,"dist":freqDist }) #add all the information to a dictionary object in an array (see above)
              print "read: " + filename_array[0], #let the user know what document we are on
              open_doc.close() #close the open document that was being read
@@ -232,18 +233,23 @@ for doc in docs: #go through all the documents
     else: #if we haven't already created a key for a given month, do it now
         points[date_month]=current_y
 
-x=[] #initialize an empty array for our X values
-y=[] #initialize an empty array for our Y values
- 
+coords = [] #initialize an array to store x,y tuples
+
 for a,b in points.iteritems(): #iterate through the points dictionary, and concatenate the month and year as a date for the x value; the frequency will be the y value
      year = a[:4]
      month = a[4:6]
-     x.append(date(int(year),int(month),1))
-     y.append(int(b))
-        
+     xy=(date(int(year),int(month),1),int(b))
+     coords.append(xy)
+
+x=[] #initialize an empty array of x coordinates
+y=[] #initialize an empty array of y coordinates
+
+for a,b in sorted(coords):
+    x.append(a)
+    y.append(b)
         
 dateformat = dates.DateFormatter('%Y-%m', tz=None) #format the date, YYYY-MM
-plt.scatter(x,y) #create the scatter plot
+plt.plot(x,y) #create the scatter plot
 ax=plt.gca() #call up the axis and store it as "ax"
 ax.xaxis.set_major_formatter(dateformat) #convert the xaxis of the plot to match our date formatter
 plt.show() #print the graph
@@ -275,26 +281,6 @@ for m,dist in month.items(): #go through our monthly distributions
     print ".", #print a dot to let the user know it's working
     f.close() #close the file
 print "Done!" #let the user know we are all done
-
-# <codecell>
-
-print month
-
-# <codecell>
-
-print month['189001']['d']
-    
-
-# <codecell>
-
-matrix = {}
-for m in month.items():
-    for k,v in m[1].items():
-        print k, v
-            
-
-# <codecell>
-
 
 # <codecell>
 
