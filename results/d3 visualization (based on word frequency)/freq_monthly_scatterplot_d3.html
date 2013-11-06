@@ -23,72 +23,81 @@ body {
   stroke-width: 1.5px;
 }
 
+a {text-decoration:none;}
 #graph {float:left;width:960px;height:500px;}
 #show-after-load {display:none;}
 #title {margin:10px;}
+#search-box {margin:10px;}
 .label {font-weight:bold;}
 #suggestions a {color:blue;cursor:pointer;margin:10px;}
+#notes {clear:both;margin:10px;}
 </style>
 
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript">
-    var dataset;
-	var datakeys;
-	var url = "freqdist_monthly.json";
-    var default_search_term = "victimes";
-	
-   function setkeys(data) {
-		var keysarray = [];
-		for(var key in data) {
+
+/*Global Declarations*/
+    var dataset; /*globally declare a variable to hold our dataset*/
+	var datakeys; /*globally declare a variable to hold the keys from the JSON file*/
+	var url = "freqdist_monthly.json";  /*globally declare a variable to hold the url to the JSON file*/
+    var default_search_term = "victimes"; /*declare a variable to hold the default search value to initialize the graph*/
+
+/*Functions*/
+   function setkeys(data) {			
+	/*Create an array of all available keys from our JSON (passed as data) and then sort them; they will be used for our X coordinates and parsed as dates*/
+		var keysarray = []; /*initialize an array to store the keys*/
+		for(var key in data) { /*push each key to the array*/
 			keysarray.push(key);
 		};
-		keysarray.sort();
+		keysarray.sort(); /*sort the keys*/
 		return keysarray;
 	}
    
    function getFrequency(query) {
-		var results = [];
-		for (var x in datakeys) {
+    /*retrieve the frequency for a given search term from the JSON (global variable dataset)*/
+		var results = []; /*initialize an array to store our results*/
+		for (var x in datakeys) {	/*go through each item in our array of keys (gloval variable datakeys)*/
 			var result;
-			if (dataset[datakeys[x]][query]) {
+			if (dataset[datakeys[x]][query]) { /*add the frequency count to a results array if the index exists -- i.e. if there is a value for a given word in a particular month*/
 				result = dataset[datakeys[x]][query];
-			} else {
+			} else { /*if there is no instance of the word in a month (and the key doesn't exist), then set it to zero for the month*/
 				result = 0;
 			}
 			
-			results.push(result);
+			results.push(result); /*push the results to an array to them return them*/
 		}
 		return results;
 	}
    
    function loadData() {
+    /* loads our JSON from a file using an ajax request; the callback sets it to the global variable "dataset"; the callback also hides the loading note and shows the graph once the file has been successfully loaded into memory*/
 			$.getJSON(url,function(json) {
 			   dataset = json;
 			   console.log("JSON loaded as dataset");
 			   datakeys = setkeys(dataset);
 			   $('#loading').hide();
-			   search();
+			   search(); /*run the graph using the default value in the search-box, so we have an initial graph to display*/
 			   $('#show-after-load').show();
 			 });
 	}
 	
 	function search() {
-		var search_term = $('#query').val();
-		var results = getFrequency(search_term);
-		showResults(results);
+	 /*search for a given term and then return the frequency value for each month*/
+		var search_term = $('#query').val(); /*get the search term from the input box*/
+		var results = getFrequency(search_term); /*get the frequency for the search term*/
+		showResults(results); /*print the results to the screen*/
 		
-		var data_array = [];
-		for (var x in results) {
+		var data_array = []; /*store our results in a nested array, which will then be mapped onto a different format understood by d3*/
+		for (var x in results) { 
 			data_array.push([datakeys[x],results[x]]);
 		}
-		console.log(x)
-		console.log(data_array[0]);
-		drawGraph(data_array);
+		drawGraph(data_array); /*draw the d3 line graph using the results we've retrieved and stored in the nested array*/
 	}
 	
 	function showResults(an_array) {
+	/*prints the results to the screen for the user to see*/
 		var results ="";
 		for(var x in an_array) {
 			results = results + datakeys[x] + ": " + an_array[x] + "<br/>"
@@ -97,50 +106,51 @@ body {
 	}
 	
 	function drawGraph(arrData) {
+	/*draws the d3 line graph using d3.js*/
 					 
-		var margin = {top: 20, right: 20, bottom: 30, left: 50},
+		var margin = {top: 20, right: 20, bottom: 30, left: 50},	/*set the margins the svg canvas*/
 			width = 960 - margin.left - margin.right,
 			height = 500 - margin.top - margin.bottom;
 
-		var parseDate = d3.time.format("%Y%m").parse;
+		var parseDate = d3.time.format("%Y%m").parse;  /*set up the date formatter/parser to understand our x values (YYYY-MM)*/
 
 
-		var x = d3.time.scale()
+		var x = d3.time.scale() /*dynamically generate the x-axis time scale*/
 			.range([0, width])
 
-		var y = d3.scale.linear()
+		var y = d3.scale.linear() /*dynamically generate a linear y-axis (frequency counts)*/
 			.range([height, 0]);
 
-		var xAxis = d3.svg.axis()
+		var xAxis = d3.svg.axis() /*put the x-axis at the bottom*/
 			.scale(x)
 			.orient("bottom");
 
-		var yAxis = d3.svg.axis()
+		var yAxis = d3.svg.axis() /*put the y axis along the lefthand side*/
 			.scale(y)
 			.orient("left");
 
-		var line = d3.svg.line()
+		var line = d3.svg.line() /*draw the lines using the points mapped onto the class object "d"*/
 			.x(function(d) { return x(d.date); })
-			.y(function(d) { return y(d.close); });
+			.y(function(d) { return y(d.freq); });
 		
-		d3.select("#graph").selectAll("svg").remove();
+		d3.select("#graph").selectAll("svg").remove(); /*remove any previous graph if there was one*/
 		
-		var svg = d3.select("#graph").append("svg")
+		var svg = d3.select("#graph").append("svg") /*create a new graph*/
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 		  .append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-		  var data = arrData.map(function(d) {
+		  var data = arrData.map(function(d) { /*map our data onto the format expected by d3 -- json object of {date:value, freq:value}*/
 			  return {
 				 date: parseDate(d[0]),
-				 close: d[1]
+				 freq: d[1]
 			  };
 			  
 		  });
 
 		  x.domain(d3.extent(data, function(d) { return d.date; }));
-		  y.domain(d3.extent(data, function(d) { return d.close; }));
+		  y.domain(d3.extent(data, function(d) { return d.freq; }));
 
 		  svg.append("g")
 			  .attr("class", "x axis")
@@ -165,12 +175,14 @@ body {
 	}
 	
 	$(document).ready(function() {
-		$('#query').val(default_search_term);
-		loadData();
-		$('#suggestions a').click(function() {
+	/*initial declarations and event listeners to take effect once the DOM is loaded*/
+		$('#query').val(default_search_term); /*set the default search term in the search box*/
+		loadData(); /*init the AJAX request for the JSON from the server*/
+		$('#suggestions a').click(function() { /*bind a listener to the suggested search terms to generate charts when clicked */
 			$('#query').val($(this).text());
 			search();
 		});
+		$('#json-url').attr('href',url); /*set the link to the JSON file based on the global variable "url"*/
 	});
    </script>
 
@@ -179,7 +191,9 @@ body {
 <div id="loading">Loading...</div>
 <div id="show-after-load">
 	<div id="title">
-		<h3>Word Frequecny for <i>Le Temps</i> (January 1890 to April 1891)</h3>
+		<h1><a href="http://www.christophermchurch.com">Christopher M. Church - www.christophermchurch.com</a><h1>
+		<hr/>
+		<h3>Word Frequecny for <i>Le Temps</i> (January 1890 to April 1891) - Aggregated by month</h3>
 	</div>
 	<div id="search-box">
 		<input type="text" name="search_term" id="query"></input>
@@ -190,12 +204,23 @@ body {
 			<a>fort-de-france</a>
 			<a>martinique</a>
 			<a>secours</a>
+			<a>port-louis</a>
 		</div>
 	</div>
 	<br/>
 	
 	<div id="graph"></div>
 	<div id="results"></div>
-</div>		
+	<div id="notes">
+		<h3>Description:</h3>
+		<p>The above chart shows the word frequency of a given search term across all issues of the daily Parisian newspaper, <i>Le Temps</i>, for the period January 1st, 1890, to April 30, 1891. The word frequencies were calculated <a href="https://github.com/cmchurch/nltk_french/blob/master/le-temps_189001-to-189104_frequency-dist.py" target="_blank">with this code</a> using OCR data from the National French Library. They aggregated by month. You can access digital copies of the newspaper from the Gallica Project <a href="http://gallica.bnf.fr/ark:/12148/cb34431794k/date.langEN" target="_blank">here</a>.</p>
+		<p>The periodization was chosen, because the graph above represents the first step in a project to visualize the reception of natural disasters by the public sphere in France. The specific disasters relevant to the above graph are the 1890 Fires of Fort-de-France, Martinique, and Port-Louis, Guadeloupe. These fires occured in late June and early July 1890, and an official public relief campaign ran in France from July to December 1890, with funds collected until the end of April 1891. </p>
+		<h3>Technical Notes:</h3>
+		<p>This visualization is built using <a href="http://d3js.org" target="_blank">D3 (Data-Driven Documents)</a>, using a JSON file produced by my implementation of the Natural Language Toolkit (NLTK). The JSON of word frequencies in Le Temps was created using code available <a href="https://github.com/cmchurch/nltk_french/blob/master/le-temps_189001-to-189104_frequency-dist.py" target="_blank">here</a>.</p>
+		<p>The D3 code is adapted from the sample line chart made available by mbostock <a href="http://bl.ocks.org/mbostock/3883245" target="_blank">here.</a></p>
+		<p>You can download the JSON data file that is behind the graph by clicking <a id="json-url" target="_blank">here</a></p>
+		<h3>Authorship</h3>
+		<p>This project is being run by <a href="http://www.christophermchurch.com">Christopher M. Church.</a> Last updated: 2013-11-06 at 1:30pm</p>
+	</div>		
 </body>
 </html>
