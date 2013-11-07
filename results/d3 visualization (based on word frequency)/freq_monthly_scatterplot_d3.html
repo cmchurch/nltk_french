@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style>
 
 body {
@@ -31,6 +32,7 @@ a {text-decoration:none;color:blue;}
 .label {font-weight:bold;}
 #suggestions a {color:blue;cursor:pointer;margin:10px;}
 #notes {clear:both;margin:10px;}
+#alert {color:red;font-style:italic;position:absolute;}
 </style>
 
 
@@ -43,6 +45,7 @@ a {text-decoration:none;color:blue;}
 	var datakeys; /*globally declare a variable to hold the keys from the JSON file*/
 	var url = "freqdist_monthly.json";  /*globally declare a variable to hold the url to the JSON file*/
     var default_search_term = "victimes"; /*declare a variable to hold the default search value to initialize the graph*/
+    var stopwords;
 
 /*Functions*/
    function setkeys(data) {			
@@ -73,7 +76,12 @@ a {text-decoration:none;color:blue;}
    
    function loadData() {
     /* loads our JSON from a file using an ajax request; the callback sets it to the global variable "dataset"; the callback also hides the loading note and shows the graph once the file has been successfully loaded into memory*/
-			$.getJSON(url,function(json) {
+			 $.getJSON("veronis-stopwords.json",function(json) {
+			   stopwords = json;
+			 });
+            
+            
+            $.getJSON(url,function(json) {
 			   dataset = json;
 			   console.log("JSON loaded as dataset");
 			   datakeys = setkeys(dataset);
@@ -86,14 +94,17 @@ a {text-decoration:none;color:blue;}
 	function search() {
 	 /*search for a given term and then return the frequency value for each month*/
 		var search_term = $('#query').val(); /*get the search term from the input box*/
-		var results = getFrequency(search_term); /*get the frequency for the search term*/
+		search_term = search_term.toLowerCase();
+        if ($.inArray(search_term,stopwords)>=0) {$('#alert').html('<p>"'+search_term+'" is a stop word and has been excluded from the data set. </p>');}
+        else {$('#alert').html("");}
+        var results = getFrequency(search_term); /*get the frequency for the search term*/
 		showResults(results); /*print the results to the screen*/
 		
 		var data_array = []; /*store our results in a nested array, which will then be mapped onto a different format understood by d3*/
 		for (var x in results) { 
 			data_array.push([datakeys[x],results[x]]);
 		}
-		drawGraph(data_array); /*draw the d3 line graph using the results we've retrieved and stored in the nested array*/
+		drawGraph(data_array,rescale); /*draw the d3 line graph using the results we've retrieved and stored in the nested array*/
 	}
 	
 	function showResults(an_array) {
@@ -105,7 +116,7 @@ a {text-decoration:none;color:blue;}
 		$('#results').html(results);
 	}
 	
-	function drawGraph(arrData) {
+	function drawGraph(arrData,rescale_to_zero) {
 	/*draws the d3 line graph using d3.js*/
 					 
 		var margin = {top: 20, right: 20, bottom: 30, left: 50},	/*set the margins the svg canvas*/
@@ -150,7 +161,12 @@ a {text-decoration:none;color:blue;}
 		  });
 
 		  x.domain(d3.extent(data, function(d) { return d.date; }));
-		  y.domain(d3.extent(data, function(d) { return d.freq; }));
+		  
+          var range_of_y_values = d3.extent(data, function(d) { return d.freq; });
+          var y_min = 0;
+          var y_max = range_of_y_values[1];
+          if ($('#rescale').is(':checked')) { y_min = range_of_y_values[0];}
+          y.domain([y_min,y_max]);
 
 		  svg.append("g")
 			  .attr("class", "x axis")
@@ -183,21 +199,23 @@ a {text-decoration:none;color:blue;}
 			search();
 		});
 		$('#json-url').attr('href',url); /*set the link to the JSON file based on the global variable "url"*/
+        $('#rescale').click( function() {search();});
 	});
    </script>
 
 </head>
 <body>
-<div id="loading">Loading...</div>
+<div id="loading"><img src="ajax-loader.gif"/><h2>Loading...</h2><h3>Please note: this may take a few minutes. The dataset is about 15mb. </h3></div>
 <div id="show-after-load">
 	<div id="title">
 		<h1><a href="http://www.christophermchurch.com">Christopher M. Church - www.christophermchurch.com</a><h1>
 		<hr/>
-		<h3>Word Frequecny for <i>Le Temps</i> (January 1890 to April 1891) - Aggregated by month</h3>
+		<h3>Word Frequency for <i>Le Temps</i> (January 1890 to April 1891) - Aggregated by month</h3>
 	</div>
 	<div id="search-box">
 		<input type="text" name="search_term" id="query"></input>
 		<button onclick="search()">Get Frequency</button>
+        <input type="checkbox" id="rescale"></input>Rescale Y-Axis to Minimum Value in Dataset?
 		<div id="suggestions">
 			<span class="label">Suggestions: </span>
 			<a>victimes</a>
@@ -206,7 +224,10 @@ a {text-decoration:none;color:blue;}
 			<a>secours</a>
 			<a>port-louis</a>
 			<a>compatriotes</a>
+            <a>incendiés</a>
+            <a>sinistrés</a>
 		</div>
+        <div id="alert"></div>
 	</div>
 	<br/>
 	
@@ -215,13 +236,13 @@ a {text-decoration:none;color:blue;}
 	<div id="notes">
 		<h3>Description:</h3>
 		<p>The above chart shows the word frequency of a given search term across all issues of the daily Parisian newspaper, <i>Le Temps</i>, for the period January 1st, 1890, to April 30, 1891. The word frequencies were calculated <a href="https://github.com/cmchurch/nltk_french/blob/master/le-temps_189001-to-189104_frequency-dist.py" target="_blank">with this code</a> using OCR data from the National French Library. They aggregated by month. You can access digital copies of the newspaper from the Gallica Project <a href="http://gallica.bnf.fr/ark:/12148/cb34431794k/date.langEN" target="_blank">here</a>.</p>
-		<p>The periodization was chosen, because the graph above represents the first step in a project to visualize the reception of natural disasters by the public sphere in France. The specific disasters relevant to the above graph are the 1890 Fires of Fort-de-France, Martinique, and Port-Louis, Guadeloupe. These fires occured in late June and early July 1890, and an official public relief campaign ran in France from July to December 1890, with funds collected until the end of April 1891. </p>
+		<p>The graph above represents the first step in a project to visualize the reception of natural disasters by the public sphere in France. The specific disasters relevant to the above graph are the 1890 Fires of Fort-de-France, Martinique, and Port-Louis, Guadeloupe. These fires occurred in late June and early July 1890. An official public relief campaign ran in France from July to December 1890, with funds collected until the end of April 1891. </p>
 		<h3>Technical Notes:</h3>
 		<p>This visualization is built using <a href="http://d3js.org" target="_blank">D3 (Data-Driven Documents)</a>, using a JSON file produced by my implementation of the Natural Language Toolkit (NLTK). The JSON of word frequencies in Le Temps was created using code available <a href="https://github.com/cmchurch/nltk_french/blob/master/le-temps_189001-to-189104_frequency-dist.py" target="_blank">here</a>.</p>
 		<p>The D3 code is adapted from the sample line chart made available by mbostock <a href="http://bl.ocks.org/mbostock/3883245" target="_blank">here.</a></p>
 		<p>You can download the JSON data file that is behind the graph by clicking <a id="json-url" target="_blank">here</a></p>
 		<h3>Authorship</h3>
-		<p>This project is being run by <a href="http://www.christophermchurch.com">Christopher M. Church.</a> Last updated: 2013-11-06 at 1:30pm</p>
+		<p>This project is being run by <a href="http://www.christophermchurch.com">Christopher M. Church.</a> Last updated: 2013-11-07 at 8:00am</p>
 	</div>		
 </body>
 </html>
