@@ -14,10 +14,13 @@ import os #operating system library for os-walk
 
 #set the root path for the working directory
 #root_path="E:\\Webscraping\\20130827_bnfscrape-data\\working-files\\period2" #set the path that we are going to read through
-root_path = "C:\\Users\\Christopher\\Desktop\\nltk - le temps data\\edit"
+root_path = "C:\\Users\\Church\\Desktop\\working-folder"
 
-#VERONIS STOPWORDS
+#VERONIS STOPWORDS (http://sites.univ-provence.fr/veronis/) (http://www.up.univ-mrs.fr/veronis/data/antidico.txt)
 stopwords = ["Ap.", "Apr.", "GHz", "MHz", "USD", "a", "afin", "ah", "ai", "aie", "aient", "aies", "ait", "alors", "après", "as", "attendu", "au", "au-delà", "au-devant", "aucun", "aucune", "audit", "auprès", "auquel", "aura", "aurai", "auraient", "aurais", "aurait", "auras", "aurez", "auriez", "aurions", "aurons", "auront", "aussi", "autour", "autre", "autres", "autrui", "aux", "auxdites", "auxdits", "auxquelles", "auxquels", "avaient", "avais", "avait", "avant", "avec", "avez", "aviez", "avions", "avons", "ayant", "ayez", "ayons", "b", "bah", "banco", "ben", "bien", "bé", "c", "c'", "c'est", "c'était", "car", "ce", "ceci", "cela", "celle", "celle-ci", "celle-là", "celles", "celles-ci", "celles-là", "celui", "celui-ci", "celui-là", "celà", "cent", "cents", "cependant", "certain", "certaine", "certaines", "certains", "ces", "cet", "cette", "ceux", "ceux-ci", "ceux-là", "cf.", "cg", "cgr", "chacun", "chacune", "chaque", "chez", "ci", "cinq", "cinquante", "cinquante-cinq", "cinquante-deux", "cinquante-et-un", "cinquante-huit", "cinquante-neuf", "cinquante-quatre", "cinquante-sept", "cinquante-six", "cinquante-trois", "cl", "cm", "cm²", "comme", "contre", "d", "d'", "d'après", "d'un", "d'une", "dans", "de", "depuis", "derrière", "des", "desdites", "desdits", "desquelles", "desquels", "deux", "devant", "devers", "dg", "différentes", "différents", "divers", "diverses", "dix", "dix-huit", "dix-neuf", "dix-sept", "dl", "dm", "donc", "dont", "douze", "du", "dudit", "duquel", "durant", "dès", "déjà", "e", "eh", "elle", "elles", "en", "en-dehors", "encore", "enfin", "entre", "envers", "es", "est", "et", "eu", "eue", "eues", "euh", "eurent", "eus", "eusse", "eussent", "eusses", "eussiez", "eussions", "eut", "eux", "eûmes", "eût", "eûtes", "f", "fait", "fi", "flac", "fors", "furent", "fus", "fusse", "fussent", "fusses", "fussiez", "fussions", "fut", "fûmes", "fût", "fûtes", "g", "gr", "h", "ha", "han", "hein", "hem", "heu", "hg", "hl", "hm", "hm³", "holà", "hop", "hormis", "hors", "huit", "hum", "hé", "i", "ici", "il", "ils", "j", "j'", "j'ai", "j'avais", "j'étais", "jamais", "je", "jusqu'", "jusqu'au", "jusqu'aux", "jusqu'à", "jusque", "k", "kg", "km", "km²", "l", "l'", "l'autre", "l'on", "l'un", "l'une", "la", "laquelle", "le", "lequel", "les", "lesquelles", "lesquels", "leur", "leurs", "lez", "lors", "lorsqu'", "lorsque", "lui", "lès", "m", "m'", "ma", "maint", "mainte", "maintes", "maints", "mais", "malgré", "me", "mes", "mg", "mgr", "mil", "mille", "milliards", "millions", "ml", "mm", "mm²", "moi", "moins", "mon", "moyennant", "mt", "m²", "m³", "même", "mêmes", "n", "n'avait", "n'y", "ne", "neuf", "ni", "non", "nonante", "nonobstant", "nos", "notre", "nous", "nul", "nulle", "nº", "néanmoins", "o", "octante", "oh", "on", "ont", "onze", "or", "ou", "outre", "où", "p", "par", "par-delà", "parbleu", "parce", "parmi", "pas", "passé", "pendant", "personne", "peu", "plus", "plus_d'un", "plus_d'une", "plusieurs", "pour", "pourquoi", "pourtant", "pourvu", "près", "puisqu'", "puisque", "q", "qu", "qu'", "qu'elle", "qu'elles", "qu'il", "qu'ils", "qu'on", "quand", "quant", "quarante", "quarante-cinq", "quarante-deux", "quarante-et-un", "quarante-huit", "quarante-neuf", "quarante-quatre", "quarante-sept", "quarante-six", "quarante-trois", "quatorze", "quatre", "quatre-vingt", "quatre-vingt-cinq", "quatre-vingt-deux", "quatre-vingt-dix", "quatre-vingt-dix-huit", "quatre-vingt-dix-neuf", "quatre-vingt-dix-sept", "quatre-vingt-douze", "quatre-vingt-huit", "quatre-vingt-neuf", "quatre-vingt-onze", "quatre-vingt-quatorze", "quatre-vingt-quatre", "quatre-vingt-quinze", "quatre-vingt-seize", "quatre-vingt-sept", "quatre-vingt-six", "quatre-vingt-treize", "quatre-vingt-trois", "quatre-vingt-un", "quatre-vingt-une", "quatre-vingts", "que", "quel", "quelle", "quelles", "quelqu'", "quelqu'un", "quelqu'une", "quelque", "quelques", "quelques-unes", "quelques-uns", "quels", "qui", "quiconque", "quinze", "quoi", "quoiqu'", "quoique", "r", "revoici", "revoilà", "rien", "s", "s'", "sa", "sans", "sauf", "se", "seize", "selon", "sept", "septante", "sera", "serai", "seraient", "serais", "serait", "seras", "serez", "seriez", "serions", "serons", "seront", "ses", "si", "sinon", "six", "soi", "soient", "sois", "soit", "soixante", "soixante-cinq", "soixante-deux", "soixante-dix", "soixante-dix-huit", "soixante-dix-neuf", "soixante-dix-sept", "soixante-douze", "soixante-et-onze", "soixante-et-un", "soixante-et-une", "soixante-huit", "soixante-neuf", "soixante-quatorze", "soixante-quatre", "soixante-quinze", "soixante-seize", "soixante-sept", "soixante-six", "soixante-treize", "soixante-trois", "sommes", "son", "sont", "sous", "soyez", "soyons", "suis", "suite", "sur", "sus", "t", "t'", "ta", "tacatac", "tandis", "te", "tel", "telle", "telles", "tels", "tes", "toi", "ton", "toujours", "tous", "tout", "toute", "toutefois", "toutes", "treize", "trente", "trente-cinq", "trente-deux", "trente-et-un", "trente-huit", "trente-neuf", "trente-quatre", "trente-sept", "trente-six", "trente-trois", "trois", "très", "tu", "u", "un", "une", "unes", "uns", "v", "vers", "via", "vingt", "vingt-cinq", "vingt-deux", "vingt-huit", "vingt-neuf", "vingt-quatre", "vingt-sept", "vingt-six", "vingt-trois", "vis-à-vis", "voici", "voilà", "vos", "votre", "vous", "w", "x", "y", "z", "zéro", "à", "ç'", "ça", "ès", "étaient", "étais", "était", "étant", "étiez", "étions", "été", "étée", "étées", "étés", "êtes", "être", "ô"]
+lower_stopwords = [] #make all the stopwords lowercase in order to normalize them
+for stopword in stopwords:
+    lower_stopwords.append(stopword.lower())
 
 # <headingcell level=1>
 
@@ -30,7 +33,7 @@ stopwords = ["Ap.", "Apr.", "GHz", "MHz", "USD", "a", "afin", "ah", "ai", "aie",
 #USE REGEX INSTEAD OF XML PARSE; lower overhead; also, the files themselves had some problems in the XML and were not properly formed, which resulted in a parse error exception; regex is agnostic to this problem
 import re #regex library
 
-
+path=root_path
 elem_name = "span" #name of the dom element to look for
 xmls=[] #open up an empty array into which we will store our XML filenames
 
@@ -87,7 +90,7 @@ for root,dirs,files in os.walk(path): #walk through the filepath and look for xm
              tokens = nltk.word_tokenize(open_doc_text) #create tokens based on whitespace (word_tokenize)
              sentences = nltk.sent_tokenize(open_doc_text) #grab sentences from nltk (sent_tokenize)
              text = nltk.text.Text(tokens,'UTF8') #create an NTLK text from the word tokens
-             freqDist = nltk.FreqDist(word.lower() for word in tokens if re.match("^[a-zA-Z0-9_.-]+$", word) and word not in stopwords) #create a frequency distribution (normalized with lowercase words) for this newspaper issue, and discard any non-alphanumeric words
+             freqDist = nltk.FreqDist(word.lower() for word in tokens if re.match("^[a-zäáàëéèíìöóòúùñç.-]+$", word.lower()) and word.lower() not in stopwords) #create a frequency distribution (normalized with lowercase words) for this newspaper issue, and discard any non-alphanumeric words
              docs.append({"newspaper_name":filename_array[1],"newspaper_date":filename_array[0],"newspaper_rawtext":open_doc_text,"tokens":tokens,"sentences":sentences,"text":text,"dist":freqDist }) #add all the information to a dictionary object in an array (see above)
              print "read: " + filename_array[0], #let the user know what document we are on
              open_doc.close() #close the open document that was being read
@@ -218,27 +221,18 @@ import matplotlib.dates as dates
 from datetime import date #needed to parse the dates
 
 #ENTER SEARCH TERM HERE
-search_term="fort-de-france"
-
-points={} #create an empty dictionary known as "points" -- this will store the informtion for each data point (x,y) on our scatterplot
-
-
-#this aggregates the information by month
-for doc in docs: #go through all the documents
-    date_month = doc['newspaper_date'][:6] #grab the date from the first 6 characters, which gives you the year and month
-    current_y = doc['dist'][search_term] #look up the raw count of the word from "search_term" in a given document
-    if date_month in points: #if the month is already in our points array, then look up its key and add the current value to it
-        total_y = current_y + points[date_month]
-        points[date_month]=total_y
-    else: #if we haven't already created a key for a given month, do it now
-        points[date_month]=current_y
+search_term="paris"
 
 coords = [] #initialize an array to store x,y tuples
 
-for a,b in points.iteritems(): #iterate through the points dictionary, and concatenate the month and year as a date for the x value; the frequency will be the y value
+for a,b in data.iteritems(): #iterate through the points dictionary, and concatenate the month and year as a date for the x value; the frequency will be the y value
      year = a[:4]
      month = a[4:6]
-     xy=(date(int(year),int(month),1),int(b))
+     if search_term in b.keys():
+          freq  = b[search_term]
+     else:
+          freq = 0
+     xy=(date(int(year),int(month),1),freq)
      coords.append(xy)
 
 x=[] #initialize an empty array of x coordinates
@@ -281,6 +275,19 @@ for m,dist in month.items(): #go through our monthly distributions
     print ".", #print a dot to let the user know it's working
     f.close() #close the file
 print "Done!" #let the user know we are all done
+
+# <codecell>
+
+print data
+
+# <codecell>
+
+print xmls
+
+# <codecell>
+
+for stopword in lower_stopwords:
+    print '"'+stopword + '", ',
 
 # <codecell>
 
