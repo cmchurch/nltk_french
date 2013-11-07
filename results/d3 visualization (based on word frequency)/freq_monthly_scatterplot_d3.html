@@ -47,6 +47,26 @@ a {text-decoration:none;color:blue;}
     var default_search_term = "victimes"; /*declare a variable to hold the default search value to initialize the graph*/
     var stopwords;
 
+/*extend jQuery to add a progress listener (code from https://gist.github.com/db/966388)*/
+
+(function addXhrProgressEvent($) {
+    var originalXhr = $.ajaxSettings.xhr;
+    $.ajaxSetup({
+        progress: function() { console.log("standard progress callback"); },
+        xhr: function() {
+            var req = originalXhr(), that = this;
+            if (req) {
+                if (typeof req.addEventListener == "function") {
+                    req.addEventListener("progress", function(evt) {
+                        that.progress(evt);
+                    },false);
+                }
+            }
+            return req;
+        }
+    });
+})(jQuery);
+    
 /*Functions*/
    function setkeys(data) {			
 	/*Create an array of all available keys from our JSON (passed as data) and then sort them; they will be used for our X coordinates and parsed as dates*/
@@ -80,15 +100,28 @@ a {text-decoration:none;color:blue;}
 			   stopwords = json;
 			 });
             
-            
-            $.getJSON(url,function(json) {
-			   dataset = json;
-			   console.log("JSON loaded as dataset");
-			   datakeys = setkeys(dataset);
-			   $('#loading').hide();
-			   search(); /*run the graph using the default value in the search-box, so we have an initial graph to display*/
-			   $('#show-after-load').show();
-			 });
+                    
+             $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function(json) { /*run this code once the file has been loaded*/ 
+                    dataset = json; /*store the json in the global variable dataset*/
+                    datakeys = setkeys(dataset); /*get and sort the json keys (dates)*/
+                    $('#loading').hide(); /*hide the loading screen once it's done loading*/
+                    search(); /*run the graph using the default value in the search-box, so we have an initial graph to display*/
+                    $('#show-after-load').show();  /*show the main div after the loading is complete*/              
+                },
+                progress: function(evt) { /*give progress updates as the file is being downloaded*/
+                    if (evt.lengthComputable) {
+                        $('#percentage').html("Loaded " + parseInt( (evt.loaded / evt.total * 100), 10) + "%");
+                    }
+                    else {
+                        console.log("Length not computable.");
+                    }
+                }
+ 
+                });
 	}
 	
 	function search() {
@@ -205,7 +238,7 @@ a {text-decoration:none;color:blue;}
 
 </head>
 <body>
-<div id="loading"><img src="ajax-loader.gif"/><h2>Loading...</h2><h3>Please note: this may take a few minutes. The dataset is about 15mb. </h3></div>
+<div id="loading"><img src="ajax-loader.gif"/><h2>Loading...</h2><h3>Please note: this may take a few minutes. The dataset is about 15mb. </h3><span id="percentage"></span></div>
 <div id="show-after-load">
 	<div id="title">
 		<h1><a href="http://www.christophermchurch.com">Christopher M. Church - www.christophermchurch.com</a><h1>
